@@ -437,6 +437,7 @@ class Decl {
     return u.opaque == that.u.opaque;
   }
   static std::optional<::pasta::Decl> From(const TokenContext &);
+  static std::optional<::pasta::Decl> From(const DeclContext &);
  protected:
   friend class TokenContext;
 
