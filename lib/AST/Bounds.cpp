@@ -1080,7 +1080,11 @@ class DeclBoundsFinder : public clang::DeclVisitor<DeclBoundsFinder>,
 
     clang::FunctionDecl *func =
         clang::dyn_cast<clang::FunctionDecl>(decl->getDeclContext());
-    if (!func) {
+    // Note: If the ParamVarDecl is from the implicitly defaulted FunctionDecl
+    //       then the corresponding token does not exist. No need to look for
+    //       token bounds in that case; Return early with the default initialization
+    //       of `lower_bounds` and `upper_bounds`
+    if (!func || func->isDefaulted()) {
       return;
     }
 
