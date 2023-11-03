@@ -6001,13 +6001,15 @@ PASTA_DEFINE_DERIVED_OPERATORS(RedeclarableTemplateDecl, VarTemplateDecl)
   throw std::runtime_error("RedeclarableTemplateDecl::CanonicalDeclaration can return nullptr!");
 }
 
-::pasta::RedeclarableTemplateDecl RedeclarableTemplateDecl::InstantiatedFromMemberTemplate(void) const {
+std::optional<::pasta::RedeclarableTemplateDecl> RedeclarableTemplateDecl::InstantiatedFromMemberTemplate(void) const {
   auto &self = *const_cast<clang::RedeclarableTemplateDecl *>(u.RedeclarableTemplateDecl);
   decltype(auto) val = self.getInstantiatedFromMemberTemplate();
+  if (!val) {
+    return std::nullopt;
+  }
   if (val) {
     return DeclBuilder::Create<::pasta::RedeclarableTemplateDecl>(ast, val);
   }
-  throw std::runtime_error("RedeclarableTemplateDecl::InstantiatedFromMemberTemplate can return nullptr!");
 }
 
 bool RedeclarableTemplateDecl::IsMemberSpecialization(void) const {
@@ -6950,13 +6952,15 @@ PASTA_DEFINE_BASE_OPERATORS(TemplateDecl, VarTemplateDecl)
   throw std::runtime_error("VarTemplateDecl::CanonicalDeclaration can return nullptr!");
 }
 
-::pasta::VarTemplateDecl VarTemplateDecl::InstantiatedFromMemberTemplate(void) const {
+std::optional<::pasta::VarTemplateDecl> VarTemplateDecl::InstantiatedFromMemberTemplate(void) const {
   auto &self = *const_cast<clang::VarTemplateDecl *>(u.VarTemplateDecl);
   decltype(auto) val = self.getInstantiatedFromMemberTemplate();
+  if (!val) {
+    return std::nullopt;
+  }
   if (val) {
     return DeclBuilder::Create<::pasta::VarTemplateDecl>(ast, val);
   }
-  throw std::runtime_error("VarTemplateDecl::InstantiatedFromMemberTemplate can return nullptr!");
 }
 
 ::pasta::VarTemplateDecl VarTemplateDecl::MostRecentDeclaration(void) const {
@@ -7191,19 +7195,6 @@ bool CXXDeductionGuideDecl::IsExplicit(void) const {
   return val;
 }
 
-std::vector<::pasta::TemplateParameterList> CXXDeductionGuideDecl::TemplateParameterLists(void) const {
-  std::vector<::pasta::TemplateParameterList> ret;
-  auto convert_elem = [&] (clang::TemplateParameterList * val) {
-    return ::pasta::TemplateParameterList(ast, val);
-  };
-  auto count = u.CXXDeductionGuideDecl->getNumTemplateParameterLists();
-  decltype(count) i = 0;
-  for (; i < count; ++i) {
-    ret.emplace_back(convert_elem(u.CXXDeductionGuideDecl->getTemplateParameterList(i)));
-  }
-  return ret;
-}
-
 std::vector<::pasta::ParmVarDecl> CXXDeductionGuideDecl::ParameterDeclarations(void) const {
   std::vector<::pasta::ParmVarDecl> ret;
   auto convert_elem = [&] (const clang::ParmVarDecl * val) {
@@ -7216,6 +7207,19 @@ std::vector<::pasta::ParmVarDecl> CXXDeductionGuideDecl::ParameterDeclarations(v
   decltype(count) i = 0;
   for (; i < count; ++i) {
     ret.emplace_back(convert_elem(u.CXXDeductionGuideDecl->getParamDecl(i)));
+  }
+  return ret;
+}
+
+std::vector<::pasta::TemplateParameterList> CXXDeductionGuideDecl::TemplateParameterLists(void) const {
+  std::vector<::pasta::TemplateParameterList> ret;
+  auto convert_elem = [&] (clang::TemplateParameterList * val) {
+    return ::pasta::TemplateParameterList(ast, val);
+  };
+  auto count = u.CXXDeductionGuideDecl->getNumTemplateParameterLists();
+  decltype(count) i = 0;
+  for (; i < count; ++i) {
+    ret.emplace_back(convert_elem(u.CXXDeductionGuideDecl->getTemplateParameterList(i)));
   }
   return ret;
 }
@@ -7370,19 +7374,6 @@ uint32_t CXXMethodDecl::SizeOverriddenMethods(void) const {
   return val;
 }
 
-std::vector<::pasta::TemplateParameterList> CXXMethodDecl::TemplateParameterLists(void) const {
-  std::vector<::pasta::TemplateParameterList> ret;
-  auto convert_elem = [&] (clang::TemplateParameterList * val) {
-    return ::pasta::TemplateParameterList(ast, val);
-  };
-  auto count = u.CXXMethodDecl->getNumTemplateParameterLists();
-  decltype(count) i = 0;
-  for (; i < count; ++i) {
-    ret.emplace_back(convert_elem(u.CXXMethodDecl->getTemplateParameterList(i)));
-  }
-  return ret;
-}
-
 std::vector<::pasta::ParmVarDecl> CXXMethodDecl::ParameterDeclarations(void) const {
   std::vector<::pasta::ParmVarDecl> ret;
   auto convert_elem = [&] (const clang::ParmVarDecl * val) {
@@ -7395,6 +7386,19 @@ std::vector<::pasta::ParmVarDecl> CXXMethodDecl::ParameterDeclarations(void) con
   decltype(count) i = 0;
   for (; i < count; ++i) {
     ret.emplace_back(convert_elem(u.CXXMethodDecl->getParamDecl(i)));
+  }
+  return ret;
+}
+
+std::vector<::pasta::TemplateParameterList> CXXMethodDecl::TemplateParameterLists(void) const {
+  std::vector<::pasta::TemplateParameterList> ret;
+  auto convert_elem = [&] (clang::TemplateParameterList * val) {
+    return ::pasta::TemplateParameterList(ast, val);
+  };
+  auto count = u.CXXMethodDecl->getNumTemplateParameterLists();
+  decltype(count) i = 0;
+  for (; i < count; ++i) {
+    ret.emplace_back(convert_elem(u.CXXMethodDecl->getTemplateParameterList(i)));
   }
   return ret;
 }
@@ -7417,13 +7421,15 @@ PASTA_DEFINE_BASE_OPERATORS(TemplateDecl, ClassTemplateDecl)
   throw std::runtime_error("ClassTemplateDecl::CanonicalDeclaration can return nullptr!");
 }
 
-::pasta::ClassTemplateDecl ClassTemplateDecl::InstantiatedFromMemberTemplate(void) const {
+std::optional<::pasta::ClassTemplateDecl> ClassTemplateDecl::InstantiatedFromMemberTemplate(void) const {
   auto &self = *const_cast<clang::ClassTemplateDecl *>(u.ClassTemplateDecl);
   decltype(auto) val = self.getInstantiatedFromMemberTemplate();
+  if (!val) {
+    return std::nullopt;
+  }
   if (val) {
     return DeclBuilder::Create<::pasta::ClassTemplateDecl>(ast, val);
   }
-  throw std::runtime_error("ClassTemplateDecl::InstantiatedFromMemberTemplate can return nullptr!");
 }
 
 ::pasta::ClassTemplateDecl ClassTemplateDecl::MostRecentDeclaration(void) const {
@@ -7716,13 +7722,15 @@ PASTA_DEFINE_BASE_OPERATORS(TemplateDecl, FunctionTemplateDecl)
   throw std::runtime_error("FunctionTemplateDecl::CanonicalDeclaration can return nullptr!");
 }
 
-::pasta::FunctionTemplateDecl FunctionTemplateDecl::InstantiatedFromMemberTemplate(void) const {
+std::optional<::pasta::FunctionTemplateDecl> FunctionTemplateDecl::InstantiatedFromMemberTemplate(void) const {
   auto &self = *const_cast<clang::FunctionTemplateDecl *>(u.FunctionTemplateDecl);
   decltype(auto) val = self.getInstantiatedFromMemberTemplate();
+  if (!val) {
+    return std::nullopt;
+  }
   if (val) {
     return DeclBuilder::Create<::pasta::FunctionTemplateDecl>(ast, val);
   }
-  throw std::runtime_error("FunctionTemplateDecl::InstantiatedFromMemberTemplate can return nullptr!");
 }
 
 ::pasta::FunctionTemplateDecl FunctionTemplateDecl::MostRecentDeclaration(void) const {
@@ -8177,13 +8185,15 @@ PASTA_DEFINE_BASE_OPERATORS(NamedDecl, VarTemplatePartialSpecializationDecl)
 PASTA_DEFINE_BASE_OPERATORS(ValueDecl, VarTemplatePartialSpecializationDecl)
 PASTA_DEFINE_BASE_OPERATORS(VarDecl, VarTemplatePartialSpecializationDecl)
 PASTA_DEFINE_BASE_OPERATORS(VarTemplateSpecializationDecl, VarTemplatePartialSpecializationDecl)
-::pasta::VarTemplatePartialSpecializationDecl VarTemplatePartialSpecializationDecl::InstantiatedFromMember(void) const {
+std::optional<::pasta::VarTemplatePartialSpecializationDecl> VarTemplatePartialSpecializationDecl::InstantiatedFromMember(void) const {
   auto &self = *const_cast<clang::VarTemplatePartialSpecializationDecl *>(u.VarTemplatePartialSpecializationDecl);
   decltype(auto) val = self.getInstantiatedFromMember();
+  if (!val) {
+    return std::nullopt;
+  }
   if (val) {
     return DeclBuilder::Create<::pasta::VarTemplatePartialSpecializationDecl>(ast, val);
   }
-  throw std::runtime_error("VarTemplatePartialSpecializationDecl::InstantiatedFromMember can return nullptr!");
 }
 
 // 0: VarTemplatePartialSpecializationDecl::TemplateArgumentsAsWritten
@@ -9904,22 +9914,26 @@ PASTA_DEFINE_BASE_OPERATORS(TypeDecl, ClassTemplatePartialSpecializationDecl)
   return TypeBuilder::Build(ast, val);
 }
 
-::pasta::ClassTemplatePartialSpecializationDecl ClassTemplatePartialSpecializationDecl::InstantiatedFromMember(void) const {
+std::optional<::pasta::ClassTemplatePartialSpecializationDecl> ClassTemplatePartialSpecializationDecl::InstantiatedFromMember(void) const {
   auto &self = *const_cast<clang::ClassTemplatePartialSpecializationDecl *>(u.ClassTemplatePartialSpecializationDecl);
   decltype(auto) val = self.getInstantiatedFromMember();
+  if (!val) {
+    return std::nullopt;
+  }
   if (val) {
     return DeclBuilder::Create<::pasta::ClassTemplatePartialSpecializationDecl>(ast, val);
   }
-  throw std::runtime_error("ClassTemplatePartialSpecializationDecl::InstantiatedFromMember can return nullptr!");
 }
 
-::pasta::ClassTemplatePartialSpecializationDecl ClassTemplatePartialSpecializationDecl::InstantiatedFromMemberTemplate(void) const {
+std::optional<::pasta::ClassTemplatePartialSpecializationDecl> ClassTemplatePartialSpecializationDecl::InstantiatedFromMemberTemplate(void) const {
   auto &self = *const_cast<clang::ClassTemplatePartialSpecializationDecl *>(u.ClassTemplatePartialSpecializationDecl);
   decltype(auto) val = self.getInstantiatedFromMemberTemplate();
+  if (!val) {
+    return std::nullopt;
+  }
   if (val) {
     return DeclBuilder::Create<::pasta::ClassTemplatePartialSpecializationDecl>(ast, val);
   }
-  throw std::runtime_error("ClassTemplatePartialSpecializationDecl::InstantiatedFromMemberTemplate can return nullptr!");
 }
 
 // 0: ClassTemplatePartialSpecializationDecl::TemplateArgumentsAsWritten
