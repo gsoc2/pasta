@@ -474,9 +474,14 @@ class DeclBoundsFinder : public clang::DeclVisitor<DeclBoundsFinder>,
       }
 
       // NOTE(pag): This is a heuristic for detecting when things go "too far."
+      // NOTE(kumarak): We have gone too far and the token bound should end
+      //                if it reaches to a namespace. Return previous token in
+      //                that case
       if (tok_kind == clang::tok::kw_namespace) {
-        assert(kind == clang::tok::kw_namespace ||
-               tok[-1].Kind() == clang::tok::kw_using);
+        if (!(kind == clang::tok::kw_namespace ||
+            tok[-1].Kind() == clang::tok::kw_using)) {
+          return &(tok[-1]);
+        }
       }
       if (tok_kind == kind && 0 >= nesting) {
         return tok;
@@ -895,7 +900,7 @@ class DeclBoundsFinder : public clang::DeclVisitor<DeclBoundsFinder>,
 
     if (proto->l_paren) {
       assert(lower_bound < proto->l_paren);
-      assert(proto->r_paren < upper_bound);
+      assert(proto->r_paren <= upper_bound);
     }
   }
 
