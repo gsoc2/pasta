@@ -225,9 +225,28 @@ static bool IsImplicitImpl(clang::Decl *decl) {
   return IsImplicitImpl(dc_decl);
 }
 
+// The bases of a record class may not be complete. In such case,
+// `getASTRecordLayout` will fail looking for the layout of bases.
+// The function checks if the bases are valid and complete before
+// calling `getASTRecordLayout` on record definition.
+static const bool HasValidBases(const clang::CXXRecordDecl *decl) {
+  for (const auto &Base : decl->bases()) {
+    auto BaseDecl = Base.getType()->getAsCXXRecordDecl();
+    if (!BaseDecl) {
+      return false;
+    }
+  }
+  return true;
+}
+
 static const clang::ASTRecordLayout *GetRecordLayout(const clang::RecordDecl *decl) {
   auto def = decl->getDefinition();
   if (def && !def->isInvalidDecl() && def->isCompleteDefinition()) {
+    if (auto RD = clang::dyn_cast<clang::CXXRecordDecl>(decl)) {
+      if (!HasValidBases(RD)) {
+        return nullptr;
+      }
+    }
     return &(def->getASTContext().getASTRecordLayout(def));
   }
   return nullptr;
